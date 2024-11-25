@@ -1770,6 +1770,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "35cbb989542587b47205e608324ddd391f0cee1c22b4b64ae49f458334b95907"
 dependencies = [
  "borsh",
+ "schemars",
  "serde",
 ]
 
@@ -2176,6 +2177,7 @@ dependencies = [
  "near-token",
  "near-vm-runner",
  "once_cell",
+ "schemars",
  "serde",
  "serde_json",
  "wee_alloc",
@@ -2466,10 +2468,31 @@ dependencies = [
 name = "omni-eth"
 version = "0.1.0"
 dependencies = [
+ "hex",
  "near-sdk",
  "near-workspaces",
+ "omni-transaction",
  "serde_json",
+ "sha2",
  "tokio",
+]
+
+[[package]]
+name = "omni-transaction"
+version = "0.1.0"
+source = "git+https://github.com/near/omni-transaction-rs#769acd48f5edbf46354abd3aa3409e636ce9955c"
+dependencies = [
+ "borsh",
+ "bs58 0.5.1",
+ "hex",
+ "near-account-id",
+ "near-sdk",
+ "rlp",
+ "schemars",
+ "serde",
+ "serde-big-array",
+ "serde_json",
+ "sha2",
 ]
 
 [[package]]
@@ -2893,6 +2916,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "rlp"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fa24e92bb2a83198bb76d661a71df9f7076b8c420b8696e4d3d97d50d94479e3"
+dependencies = [
+ "bytes",
+ "rustc-hex",
+]
+
+[[package]]
 name = "rustc-demangle"
 version = "0.1.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3108,6 +3141,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6513c1ad0b11a9376da888e3e0baa0077f1aed55c17f50e7b2397136129fb88f"
 dependencies = [
  "serde_derive",
+]
+
+[[package]]
+name = "serde-big-array"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "11fc7cc2c76d73e0f27ee52abbd64eec84d46f370c88371120433196934e4b7f"
+dependencies = [
+ "serde",
 ]
 
 [[package]]

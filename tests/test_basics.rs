@@ -26,5 +26,3 @@ async fn test_basics_on(contract_wasm: &[u8]) -> Result<(), Box<dyn std::error::
 
     Ok(())
 }
-
-
