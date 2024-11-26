@@ -1,7 +1,6 @@
-// Find all our documentation at https://docs.near.org
 use hex::FromHex;
 use near_sdk::json_types::U128;
-use near_sdk::{env, near, require, serde_json, AccountId, Gas, Promise, PromiseError};
+use near_sdk::{env, near, require, serde_json, AccountId, Gas, NearToken, PanicOnDefault, Promise, PromiseError};
 use omni_transaction::bitcoin::encoding::ToU64;
 use omni_transaction::evm::evm_transaction::EVMTransaction;
 use omni_transaction::evm::types::Signature;
@@ -17,6 +16,7 @@ use signer::*;
 const SIGN_CALLBACK_GAS: Gas = Gas::from_tgas(50);
 
 // Define the contract structure
+#[derive(PanicOnDefault)]
 #[near(contract_state)]
 pub struct Contract {
     mpc_contract: AccountId,
@@ -46,7 +46,6 @@ impl Contract {
         }
     }
     // Public method - returns the greeting saved, defaulting to DEFAULT_GREETING
-    #[payable]
     pub fn proxy_mpc(&mut self, input: TransactionInput, path: String) -> Promise {
         // Convert the receiver address to a 20-byte array
         let address = convert_address(input.receiver);
@@ -70,19 +69,18 @@ impl Contract {
         let tx_json_string = serde_json::to_string(&evm_tx)
             .unwrap_or_else(|e| panic!("Failed to serialize transaction: {}", e));
 
-        // Create the paylaod, hash it and convert to a 32-byte array
+        // Create the payload, hash it and convert to a 32-byte array
         let payload = evm_tx.build_for_signing();
         let hashed_payload = hash_payload(&payload);
         let mpc_payload: [u8; 32] = hashed_payload
             .try_into()
             .unwrap_or_else(|e| panic!("Failed to convert payload {:?}", e));
 
-        let mpc_deposit = env::attached_deposit();
         let key_version = 0;
 
         // Call the MPC contract to sign the transaction
         ext_signer::ext(self.mpc_contract.clone())
-            .with_attached_deposit(mpc_deposit)
+            .with_attached_deposit(NearToken::from_yoctonear(1)) // Only allow for 1 yoctoNEAR deposit calls
             .sign(SignRequest::new(mpc_payload, path, key_version))
             .then(
                 Self::ext(env::current_account_id())
@@ -123,7 +121,7 @@ impl Contract {
                 r: r_bytes.to_vec(),
                 s: s_bytes.to_vec(),
             };
-            // test
+
             // Deserialize transaction
             let evm_tx = serde_json::from_str::<EVMTransaction>(&tx_json_string)
                 .unwrap_or_else(|e| panic!("Failed to deserialize transaction: {:?}", e));
